@@ -4,20 +4,20 @@ services:
     container_name: ddev-${DDEV_SITENAME}-adminer
     image: adminer:standalone
     environment:
+      # Use the line below to change the adminer theme.
       # - ADMINER_DESIGN=nette
       - ADMINER_DEFAULT_SERVER=ddev-${DDEV_SITENAME}-db
       - ADMINER_PLUGINS=tables-filter
-      # This defines the host name the service should be accessible from. This
-      # will be sitename.ddev.site.
       - VIRTUAL_HOST=$DDEV_HOSTNAME
-      # HTTP_EXPOSE allows for ports accepting HTTP traffic to be accessible from <site>.ddev.site:<port>
       - HTTP_EXPOSE=8080:8080
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
 
-    volumes:
-      - ".:/mnt/ddev_config"
+    # We do not ship any plugin configuration at the moment,
+    # but keep this here for future reference.
+    #volumes:
+    #  - "./adminer:/var/www/html/plugins-enabled"
   web:
     links:
       - adminer:adminer
