@@ -12,32 +12,20 @@ with no _external_ plugins. It contains all official plugins and themes and allo
 to easily chose one by editing the `docker-compose.adminer.yaml` file after
 installation.
 
-The official container supports:
+This currently supports:
 
 * MySQL / MariaDB
 * PostgreSQL
-* SQLite
-* SimpleDB
-* Elasticsearch
-
-## Why?
-
-Because you might need something other than MySQL / MariaDB in your DDEV project. We got you covered.
 
 ## Installation
 
 * `ddev get bserem/ddev-adminer && ddev restart`
 
-## Caveats
+Then you can just `ddev launch -a` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
 
-You need to pass database credentials manually for the time being. If you have
-any ideas on how to overcome this issue please let me know.
+## What does this add-on do?
 
-Default ddev database credentials are:
+* Adds the adminer container as a service
+* Overrides the `ddev launch` command at the project level with a `ddev launch -a` (or `ddev launch --adminer`) option.
 
-* user `db`
-* password `db`
-* database `db`
-
----
 **Contributed and maintained by [@bserem](https://github.com/bserem).**
