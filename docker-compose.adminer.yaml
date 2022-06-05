@@ -9,8 +9,8 @@ services:
       - ADMINER_DEFAULT_SERVER=db
       - ADMINER_PLUGINS=tables-filter
       - VIRTUAL_HOST=$DDEV_HOSTNAME
-      - HTTP_EXPOSE=8080:8080
-      # Oddly, the value for "mysql" in adminer is "server"
+      - HTTP_EXPOSE=9100:8080
+      - HTTPS_EXPOSE=9101:8080
       - DDEV_DBIMAGE
       - DDEV_DB_NAME=db
       - DDEV_DB_USER=db
