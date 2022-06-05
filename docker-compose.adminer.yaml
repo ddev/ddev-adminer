@@ -6,18 +6,23 @@ services:
     environment:
       # Use the line below to change the adminer theme.
       # - ADMINER_DESIGN=nette
-      - ADMINER_DEFAULT_SERVER=ddev-${DDEV_SITENAME}-db
+      - ADMINER_DEFAULT_SERVER=db
       - ADMINER_PLUGINS=tables-filter
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       - HTTP_EXPOSE=8080:8080
+      # Oddly, the value for "mysql" in adminer is "server"
+      - DDEV_DBIMAGE
+      - DDEV_DB_NAME=db
+      - DDEV_DB_USER=db
+      - DDEV_DB_PASS=db
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
+    volumes:
+      - "./adminer:/var/www/html/plugins-enabled"
+    depends_on:
+    - db
 
-    # We do not ship any plugin configuration at the moment,
-    # but keep this here for future reference.
-    #volumes:
-    #  - "./adminer:/var/www/html/plugins-enabled"
   web:
     links:
       - adminer:adminer
