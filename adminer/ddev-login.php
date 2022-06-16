@@ -1,4 +1,5 @@
 <?php
+// #ddev-generated
 class DDEVLogin {
     function loginForm() {
     ?>

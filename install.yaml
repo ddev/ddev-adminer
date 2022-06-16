@@ -4,4 +4,4 @@ name: adminer
 project_files:
 - docker-compose.adminer.yaml
 - adminer
-- commands
+- commands/host/launch

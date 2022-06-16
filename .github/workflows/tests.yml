@@ -29,7 +29,7 @@ jobs:
 
     strategy:
       matrix:
-        ddev_version: [latest, edge, HEAD]
+        ddev_version: [latest, HEAD]
 #        ddev_version: [PR]
       fail-fast: false
 

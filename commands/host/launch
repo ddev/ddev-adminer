@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#ddev-generated
 ## Description: Launch a browser with the current site
 ## Usage: launch [path] [-a|--adminer] [-p|--phpmyadmin] [-m|--mailhog]
 ## Example: "ddev launch" or "ddev launch /admin/reports/status/php" or "ddev launch phpinfo.php", for Adminer "ddev launch -a", MailHog "ddev launch -m"
