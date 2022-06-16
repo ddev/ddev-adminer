@@ -3,7 +3,8 @@ version: '3.6'
 services:
   adminer:
     container_name: ddev-${DDEV_SITENAME}-adminer
-    image: adminer:standalone
+    build:
+      context: './adminer'
     environment:
       # Use the line below to change the adminer theme.
       # - ADMINER_DESIGN=nette
@@ -19,8 +20,6 @@ services:
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
-    volumes:
-      - "./adminer:/var/www/html/plugins-enabled"
     depends_on:
     - db
 
