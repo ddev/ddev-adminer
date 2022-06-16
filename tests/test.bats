@@ -23,7 +23,7 @@ teardown() {
   echo "# ddev get ${DIR} with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
   ddev get ${DIR}
   (ddev restart >/dev/null || (echo "# ddev restart returned exit code=%?" >&3 && false))
-  ddev help launch | grep adminer >/dev/null
+  ddev help launcha | grep adminer >/dev/null
 #  echo "# Trying curl -s -L -k https://${PROJNAME}.ddev.site:9101/" >&3
   curl --fail -s -L -k https://${PROJNAME}.ddev.site:9101/ | grep 'document.querySelector.*auth.*db' >/dev/null
 }
