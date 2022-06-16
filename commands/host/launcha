@@ -2,8 +2,8 @@
 
 #ddev-generated
 ## Description: Launch a browser with the current site
-## Usage: launch [path] [-a|--adminer] [-p|--phpmyadmin] [-m|--mailhog]
-## Example: "ddev launch" or "ddev launch /admin/reports/status/php" or "ddev launch phpinfo.php", for Adminer "ddev launch -a", MailHog "ddev launch -m"
+## Usage: launcha [path] [-a|--adminer] [-p|--phpmyadmin] [-m|--mailhog]
+## Example: "ddev launcha" or "ddev launcha /admin/reports/status/php" or "ddev launcha phpinfo.php", for Adminer "ddev launcha -a", MailHog "ddev launch -m"
 
 FULLURL=${DDEV_PRIMARY_URL}
 HTTPS=""
