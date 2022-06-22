@@ -2,7 +2,7 @@ name: tests
 on:
   pull_request:
   push:
-    branches: [ master, main ]
+    branches: [ main ]
 
   schedule:
   - cron: '01 07 * * *'
@@ -29,12 +29,11 @@ jobs:
 
     strategy:
       matrix:
-#        ddev_version: [latest, edge, HEAD]
-        ddev_version: [edge, HEAD]
+        ddev_version: [latest, HEAD]
 #        ddev_version: [PR]
       fail-fast: false
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v2
@@ -76,3 +75,6 @@ jobs:
     - name: tests
       run: bats tests
 
+    # keepalive-workflow adds a dummy commit if there's no other action here, keeps
+    # GitHub from turning off tests after 60 days
+    - uses: gautamkrishnar/keepalive-workflow@v1

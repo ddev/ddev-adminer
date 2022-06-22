@@ -1,23 +1,28 @@
+#ddev-generated
 version: '3.6'
 services:
   adminer:
     container_name: ddev-${DDEV_SITENAME}-adminer
-    image: adminer:standalone
+    build:
+      context: './adminer'
     environment:
       # Use the line below to change the adminer theme.
       # - ADMINER_DESIGN=nette
-      - ADMINER_DEFAULT_SERVER=ddev-${DDEV_SITENAME}-db
+      - ADMINER_DEFAULT_SERVER=db
       - ADMINER_PLUGINS=tables-filter
       - VIRTUAL_HOST=$DDEV_HOSTNAME
-      - HTTP_EXPOSE=8080:8080
+      - HTTP_EXPOSE=9100:8080
+      - HTTPS_EXPOSE=9101:8080
+      - DDEV_DBIMAGE
+      - DDEV_DB_NAME=db
+      - DDEV_DB_USER=db
+      - DDEV_DB_PASS=db
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
+    depends_on:
+    - db
 
-    # We do not ship any plugin configuration at the moment,
-    # but keep this here for future reference.
-    #volumes:
-    #  - "./adminer:/var/www/html/plugins-enabled"
   web:
     links:
       - adminer:adminer

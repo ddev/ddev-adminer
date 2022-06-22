@@ -3,3 +3,7 @@ name: adminer
 # list of files and directories listed that are copied into project .ddev directory
 project_files:
 - docker-compose.adminer.yaml
+- adminer
+
+global_files:
+- commands/host/launcha
