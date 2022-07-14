@@ -26,7 +26,7 @@ Then you can just `ddev launch -a` or use `ddev describe` to get the URL (`https
 ## What does this add-on do?
 
 * Adds the adminer container as a service
-* Overrides the `ddev launch` command at the project level with a `ddev launch -a` (or `ddev launch --adminer`) option.
+* Adds a `ddev launcha` command at the project level with a `ddev launcha -a` (or `ddev launcha --adminer`) option to launch you right into adminer.
 
 **Contributed by [@bserem](https://github.com/bserem).**
 **Maintained by DDEV team.**
