@@ -21,7 +21,7 @@ This currently supports:
 
 * `ddev get drud/ddev-adminer && ddev restart`
 
-Then you can just `ddev launch -a` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
+Then you can just `ddev launcha -a` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
 
 ## What does this add-on do?
 
