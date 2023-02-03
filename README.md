@@ -1,10 +1,10 @@
-[![tests](https://github.com/drud/ddev-adminer/actions/workflows/tests.yml/badge.svg)](https://github.com/drud/ddev-adminer/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
+[![tests](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml/badge.svg)](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
 
 # DDEV Adminer Service
 
 ## What is this?
 
-This repository allows you to quickly install Adminer database manager into a [Ddev](https://ddev.readthedocs.io) project using just `ddev get drud/ddev-adminer`.
+This repository allows you to quickly install Adminer database manager into a [Ddev](https://ddev.readthedocs.io) project using just `ddev get ddev/ddev-adminer`.
 
 Adminer is a full-featured database management tool written in PHP. This service
 currently ships the [official adminer container](https://hub.docker.com/_/adminer)
@@ -19,7 +19,7 @@ This currently supports:
 
 ## Installation
 
-* `ddev get drud/ddev-adminer && ddev restart`
+* `ddev get ddev/ddev-adminer && ddev restart`
 
 Then you can just `ddev launcha -a` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
 
