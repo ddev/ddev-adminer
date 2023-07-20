@@ -14,6 +14,10 @@ on:
         required: false
         default: "false"
 
+# This is required for "gautamkrishnar/keepalive-workflow"
+permissions:
+  contents: write
+
 defaults:
   run:
     shell: bash
@@ -22,8 +26,6 @@ env:
   NIGHTLY_DDEV_PR_URL: "https://nightly.link/ddev/ddev/actions/runs/1720215802/ddev-linux-amd64.zip"
   # Allow ddev get to use a github token to prevent rate limiting by tests
   DDEV_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # Allow `--HEAD` flag when running tests against HEAD
-  HOMEBREW_NO_INSTALL_FROM_API: 1
 
 jobs:
   tests:
@@ -41,7 +43,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> $GITHUB_PATH
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
     - name: Environment setup
       run: |
         brew install bats-core mkcert
@@ -80,6 +84,7 @@ jobs:
     - name: tests
       run: bats tests
 
-    # keepalive-workflow adds a dummy commit if there's no other action here, keeps
-    # GitHub from turning off tests after 60 days
+      # keepalive-workflow adds a dummy commit if there's no other action here, keeps
+      # GitHub from turning off tests after 60 days
     - uses: gautamkrishnar/keepalive-workflow@v1
+      if: matrix.ddev_version == 'stable'
