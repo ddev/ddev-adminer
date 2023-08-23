@@ -21,12 +21,11 @@ This currently supports:
 
 * `ddev get ddev/ddev-adminer && ddev restart`
 
-Then you can just `ddev launcha -a` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
+Then you can just `ddev adminer` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
 
 ## What does this add-on do?
 
 * Adds the adminer container as a service
-* Adds a `ddev launcha` command at the project level with a `ddev launcha -a` (or `ddev launcha --adminer`) option to launch you right into adminer.
 
 **Contributed by [@bserem](https://github.com/bserem).**
 **Maintained by DDEV team.**
