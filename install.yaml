@@ -7,3 +7,4 @@ project_files:
 
 global_files:
 - commands/host/adminer
+- commands/host/launcha
