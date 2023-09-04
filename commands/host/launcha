@@ -15,11 +15,9 @@ while :; do
              shift
              break
              ;;
-         -?*)
+         *)
              printf "Launcha is no longer available. Please use 'ddev launch' instead. To run Adminer, please use 'ddev adminer'.\n" && exit 2
              ;;
-         *)               # Default case: No more options, so break out of the loop.
-             break
      esac
 
      shift
