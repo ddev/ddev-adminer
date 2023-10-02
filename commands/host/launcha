@@ -2,23 +2,5 @@
 
 #ddev-generated
 ## Description: DEPRECATED, use "ddev adminer" instead.
-
-while :; do
-     case ${1:-} in
-         -p|--phpmyadmin)
-             printf "Launcha is no longer available. To run PHPMyAdmin, please install it with 'ddev get ddev/ddev-phpmyadmin', 'ddev restart' and then use 'ddev phpmyadmin'.\n" && exit 2
-             ;;
-         -m|--mailhog)
-             printf "Launcha is no longer available. To run MailHog, please use 'ddev launch -m'.\n" && exit 2
-             ;;
-         --)              # End of all options.
-             shift
-             break
-             ;;
-         *)
-             printf "Launcha is no longer available. Please use 'ddev launch' instead. To run Adminer, please use 'ddev adminer'.\n" && exit 2
-             ;;
-     esac
-
-     shift
-done
+printf "'ddev launcha' is no longer available. Use 'ddev launch' and 'ddev adminer' instead."
+exit 2
