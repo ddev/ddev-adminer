@@ -5,6 +5,11 @@
 ## Usage: adminer
 ## Example: "ddev adminer"
 
+if [ "${DDEV_PROJECT_STATUS-running}" != "running" ]; then
+  echo "Project ${DDEV_PROJECT} is not running, starting it"
+  ddev start
+fi
+
 DDEV_ADMINER_PORT=9100
 DDEV_ADMINER_HTTPS_PORT=9101
 
