@@ -4,6 +4,7 @@ name: adminer
 project_files:
 - docker-compose.adminer.yaml
 - adminer
+- commands/host/adminer
 
 pre_install_actions:
   # Ensure we're on DDEV 1.23+. It's need for the `adminer` command (launch by port).
@@ -11,7 +12,3 @@ pre_install_actions:
     #ddev-nodisplay
     #ddev-description:Checking DDEV version
     (ddev debug capabilities | grep corepack >/dev/null) || (echo "Please upgrade DDEV to v1.23+ to use this add-on." && false)
-
-global_files:
-- commands/host/adminer
-- commands/host/launcha

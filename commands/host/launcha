@@ -1,6 +1,0 @@
-#!/bin/bash
-
-#ddev-generated
-## Description: DEPRECATED, use "ddev adminer" instead.
-printf "'ddev launcha' is no longer available. Use 'ddev launch' and 'ddev adminer' instead. See https://github.com/ddev/ddev-adminer"
-exit 2

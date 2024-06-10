@@ -25,15 +25,6 @@ teardown() {
   (ddev restart >/dev/null || (echo "# ddev restart returned exit code=%?" >&3 && false))
   ddev help adminer | grep adminer >/dev/null
 
-  # ddev launcha must return an error
-  (exit_status=0; (ddev launcha > /dev/null 2>&1) || exit_status=$?; echo $exit_status) | {
-      read exit_status
-      if [ $exit_status -eq 0 ]; then
-          echo "Test failed: ddev launcha exited with no error"
-          exit 2
-      fi
-  }
-
 #  echo "# Trying curl -s -L -k https://${PROJNAME}.ddev.site:9101/" >&3
   curl --fail -s -L -k https://${PROJNAME}.ddev.site:9101/ | grep 'document.querySelector.*auth.*db' >/dev/null
 }
