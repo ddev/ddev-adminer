@@ -7,7 +7,7 @@ project_files:
 - commands/host/adminer
 
 pre_install_actions:
-  # Ensure we're on DDEV 1.23+. It's need for the `adminer` command (launch by port).
+  # Ensure we're on DDEV 1.23+. It's required for the `adminer` command (launch by port).
   - |
     #ddev-nodisplay
     #ddev-description:Checking DDEV version
