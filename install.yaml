@@ -3,6 +3,7 @@ name: adminer
 # list of files and directories listed that are copied into project .ddev directory
 project_files:
 - docker-compose.adminer.yaml
+- docker-compose.adminer_norouter.yaml
 - adminer
 - commands/host/adminer
 
@@ -12,3 +13,13 @@ pre_install_actions:
     #ddev-nodisplay
     #ddev-description:Checking DDEV version
     (ddev debug capabilities | grep corepack >/dev/null) || (echo "Please upgrade DDEV to v1.23+ to use this add-on." && false)
+
+post_install_actions:
+  - |
+    #ddev-description:If router disabled, directly expose port
+    #
+    if ( {{ contains "ddev-router" (list .DdevGlobalConfig.omit_containers | toString) }} ); then
+      printf "#ddev-generated\nservices:\n  adminer:\n    ports:\n      - 9100:8080\n" > docker-compose.adminer_norouter.yaml
+    fi
+  - |
+    echo "You can now use 'ddev adminer' to launch Adminer"

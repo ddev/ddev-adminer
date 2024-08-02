@@ -8,8 +8,8 @@
 DDEV_ADMINER_PORT=9100
 DDEV_ADMINER_HTTPS_PORT=9101
 
-if [ ${DDEV_PRIMARY_URL%://*} = "https" ]; then
-    ddev launch $DDEV_PRIMARY_URL:$DDEV_ADMINER_HTTPS_PORT
+if [ ${DDEV_PRIMARY_URL%://*} = "http" ] || [ -n "${GITPOD_WORKSPACE_ID:-}" ] || [ "${CODESPACES:-}" = "true" ]; then
+    ddev launch :$DDEV_ADMINER_PORT
 else
-    ddev launch $DDEV_PRIMARY_URL:$DDEV_ADMINER_PORT
+    ddev launch :$DDEV_ADMINER_HTTPS_PORT
 fi
