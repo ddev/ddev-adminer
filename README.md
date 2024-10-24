@@ -19,7 +19,19 @@ This currently supports:
 
 ## Installation
 
-* `ddev get ddev/ddev-adminer && ddev restart`
+For DDEV v1.23.5 or above run
+
+```sh
+ddev add-on get ddev/ddev-adminer
+```
+
+For earlier versions of DDEV run
+
+```sh
+ddev get ddev/ddev-adminer
+```
+
+Afterwards run `ddev restart`
 
 Then you can just `ddev adminer` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
 
