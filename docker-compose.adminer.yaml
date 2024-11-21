@@ -8,6 +8,8 @@ services:
       # Use the line below to change the adminer theme.
       # - ADMINER_DESIGN=nette
       - ADMINER_DEFAULT_SERVER=db
+      - ADMINER_DEFAULT_USER=db
+      - ADMINER_DEFAULT_PASSWORD=db
       - ADMINER_PLUGINS=tables-filter
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       - HTTP_EXPOSE=9100:8080
