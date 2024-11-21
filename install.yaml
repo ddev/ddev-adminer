@@ -4,7 +4,6 @@ name: adminer
 project_files:
 - docker-compose.adminer.yaml
 - docker-compose.adminer_norouter.yaml
-- adminer
 - commands/host/adminer
 
 pre_install_actions:

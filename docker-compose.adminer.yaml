@@ -2,8 +2,7 @@
 services:
   adminer:
     container_name: ddev-${DDEV_SITENAME}-adminer
-    build:
-      context: './adminer'
+    image: shyim/adminerevo:latest
     environment:
       # Use the line below to change the adminer theme.
       # - ADMINER_DESIGN=nette
