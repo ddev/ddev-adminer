@@ -12,7 +12,7 @@ with no _external_ plugins. It contains all official plugins and themes and allo
 to easily chose one by editing the `docker-compose.adminer.yaml` file after
 installation.
 
-Adminer is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch and MongoDB.
+AdminerEvo is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch and MongoDB.
 
 ## Installation
 
