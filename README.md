@@ -4,7 +4,7 @@
 
 ## What is this?
 
-This repository allows you to quickly install the Adminerevo fork of the adminer database manager into a [Ddev](https://ddev.readthedocs.io) project using just `ddev get ddev/ddev-adminer`.
+This repository allows you to quickly install the [AdminerEvo](https://docs.adminerevo.org/) fork of the [adminer](https://www.adminer.org/) database manager into a [DDEV](https://ddev.readthedocs.io) project using just `ddev get ddev/ddev-adminer`.
 
 Adminer is a full-featured database management tool written in PHP. This service
 currently ships the [official adminer container](https://hub.docker.com/_/adminer)
