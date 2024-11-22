@@ -4,7 +4,7 @@
 
 ## What is this?
 
-This repository allows you to quickly install Adminer database manager into a [Ddev](https://ddev.readthedocs.io) project using just `ddev get ddev/ddev-adminer`.
+This repository allows you to quickly install the [AdminerEvo](https://docs.adminerevo.org/) fork of the [adminer](https://www.adminer.org/) database manager into a [DDEV](https://ddev.readthedocs.io) project using just `ddev add-on get ddev/ddev-adminer`.
 
 Adminer is a full-featured database management tool written in PHP. This service
 currently ships the [official adminer container](https://hub.docker.com/_/adminer)
@@ -12,10 +12,7 @@ with no _external_ plugins. It contains all official plugins and themes and allo
 to easily chose one by editing the `docker-compose.adminer.yaml` file after
 installation.
 
-This currently supports:
-
-* MySQL / MariaDB
-* PostgreSQL
+AdminerEvo works with MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch and MongoDB.
 
 ## Installation
 
@@ -31,7 +28,7 @@ For earlier versions of DDEV run
 ddev get ddev/ddev-adminer
 ```
 
-Afterwards run `ddev restart`
+Afterward run `ddev restart`
 
 Then you can just `ddev adminer` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
 
