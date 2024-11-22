@@ -12,6 +12,24 @@ pre_install_actions:
     #ddev-nodisplay
     #ddev-description:Checking DDEV version
     (ddev debug capabilities | grep corepack >/dev/null) || (echo "Please upgrade DDEV to v1.23+ to use this add-on." && false)
+  - |
+    #ddev-nodisplay
+    #ddev-description:Removing old adminer files
+    has_old_files=false
+    for file in "${DDEV_APPROOT}/.ddev/adminer/Dockerfile" "${DDEV_APPROOT}/.ddev/adminer/ddev-login.php"; do
+      if [ ! -f "${file}" ]; then
+        continue
+      fi
+      if grep -q '#ddev-generated' "${file}"; then
+        rm -f "${file}"
+      else
+        echo "${file} needs to be removed but has been modified by the user. Please check it and remove it"
+        has_old_files=true
+      fi
+    done
+    if [ "${has_old_files}" = true ]; then
+      exit 2
+    fi
 
 post_install_actions:
   - |
