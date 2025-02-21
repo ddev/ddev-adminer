@@ -1,27 +1,50 @@
+#!/usr/bin/env bats
+
+# Bats is a testing framework for Bash
+# Documentation https://bats-core.readthedocs.io/en/stable/
+# Bats libraries documentation https://github.com/ztombol/bats-docs
+
+# For local tests, install bats-core, bats-assert, bats-file, bats-support
+# And run this in the add-on root directory:
+#   bats ./tests/test.bats
+# To exclude release tests:
+#   bats ./tests/test.bats --filter-tags '!release'
+# For debugging:
+#   bats ./tests/test.bats --show-output-of-passing-tests --verbose-run --print-output-on-failure
+
 setup() {
   set -eu -o pipefail
-  brew_prefix=$(brew --prefix)
-  load "${brew_prefix}/lib/bats-support/load.bash"
-  load "${brew_prefix}/lib/bats-assert/load.bash"
 
-  export DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )/.."
-  export TESTDIR=~/tmp/test-adminer
-  mkdir -p $TESTDIR
-  export PROJNAME=test-adminer
-  export DDEV_NON_INTERACTIVE=true
-  ddev delete -Oy ${PROJNAME} >/dev/null 2>&1 || true
+  # Override this variable for your add-on:
+  export GITHUB_REPO=ddev/ddev-adminer
+
+  TEST_BREW_PREFIX="$(brew --prefix 2>/dev/null || true)"
+  export BATS_LIB_PATH="${BATS_LIB_PATH}:${TEST_BREW_PREFIX}/lib:/usr/lib/bats"
+  bats_load_library bats-assert
+  bats_load_library bats-file
+  bats_load_library bats-support
+
+  export DIR="$(cd "$(dirname "${BATS_TEST_FILENAME}")/.." >/dev/null 2>&1 && pwd)"
+  export PROJNAME="test-$(basename "${GITHUB_REPO}")"
+  mkdir -p ~/tmp
+  export TESTDIR=$(mktemp -d ~/tmp/${PROJNAME}.XXXXXX)
+  export DDEV_NONINTERACTIVE=true
+  export DDEV_NO_INSTRUMENTATION=true
+  ddev delete -Oy "${PROJNAME}" >/dev/null 2>&1 || true
   cd "${TESTDIR}"
-  ddev config --project-name=${PROJNAME}
-  ddev start -y >/dev/null 2>&1
+  run ddev config --project-name="${PROJNAME}" --project-tld=ddev.site
+  assert_success
+  run ddev start -y
+  assert_success
 }
 
 health_checks() {
-  set +u # bats-assert has unset variables so turn off unset check
-  # ddev restart is required because we have done `ddev add-on get` on a new service
-  run ddev restart
-  assert_success
   # Make sure we can hit the 9101 port successfully
-  curl -s -I -f https://${PROJNAME}.ddev.site:9101 >/tmp/curlout.txt
+  run curl -sfI https://${PROJNAME}.ddev.site:9101
+  assert_success
+  assert_output --partial "HTTP/2 200"
+  assert_output --partial "adminer"
+
   # Make sure `ddev adminer` works
   DDEV_DEBUG=true run ddev adminer
   assert_success
@@ -30,35 +53,39 @@ health_checks() {
 
 teardown() {
   set -eu -o pipefail
-  cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
   ddev delete -Oy ${PROJNAME} >/dev/null 2>&1
   [ "${TESTDIR}" != "" ] && rm -rf ${TESTDIR}
 }
 
 @test "install from directory" {
   set -eu -o pipefail
-  cd ${TESTDIR}
-  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev add-on get ${DIR} >/dev/null 2>&1
-  ddev mutagen sync >/dev/null 2>&1
+  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
+  run ddev add-on get "${DIR}"
+  assert_success
+  run ddev restart -y
+  assert_success
   health_checks
 }
 
+# bats test_tags=release
 @test "install from release" {
   set -eu -o pipefail
-  cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
-  echo "# ddev add-on get ddev/ddev-adminer with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev add-on get ddev/ddev-adminer >/dev/null 2>&1
-  ddev restart >/dev/null 2>&1
+  echo "# ddev add-on get ${GITHUB_REPO} with project ${PROJNAME} in $(pwd)" >&3
+  run ddev add-on get "${GITHUB_REPO}"
+  assert_success
+  run ddev restart -y
+  assert_success
   health_checks
 }
 
 @test "install from directory with nonstandard port" {
   set -eu -o pipefail
-  cd ${TESTDIR}
-  ddev config --router-http-port=8080 --router-https-port=8443
-  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev add-on get ${DIR} >/dev/null 2>&1
-  ddev mutagen sync >/dev/null 2>&1
+  run ddev config --router-http-port=8080 --router-https-port=8443
+  assert_success
+  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
+  run ddev add-on get "${DIR}"
+  assert_success
+  run ddev restart -y
+  assert_success
   health_checks
 }

@@ -1,4 +1,4 @@
-[![tests](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml/badge.svg)](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
+[![tests](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml/badge.svg)](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2025.svg)
 
 # DDEV Adminer Service
 
@@ -16,19 +16,9 @@ AdminerEvo works with MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasti
 
 ## Installation
 
-For DDEV v1.23.5 or above run
-
 ```sh
-ddev add-on get ddev/ddev-adminer
+ddev add-on get ddev/ddev-adminer && ddev restart
 ```
-
-For earlier versions of DDEV run
-
-```sh
-ddev get ddev/ddev-adminer
-```
-
-Afterward run `ddev restart`
 
 Then you can just `ddev adminer` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
 
