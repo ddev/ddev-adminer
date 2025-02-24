@@ -6,6 +6,8 @@ project_files:
 - docker-compose.adminer_norouter.yaml
 - commands/host/adminer
 
+ddev_version_constraint: '>= v1.24.2'
+
 pre_install_actions:
   # Ensure we're on DDEV 1.23+. It's required for the `adminer` command (launch by port).
   - |

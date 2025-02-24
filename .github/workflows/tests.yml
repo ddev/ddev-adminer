@@ -10,10 +10,16 @@ on:
   workflow_dispatch:
     inputs:
       debug_enabled:
-        description: 'Debug with tmate set "debug_enabled"'
+        type: boolean
+        description: Debug with tmate
         required: false
-        default: "false"
+        default: false
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# This is required for "gautamkrishnar/keepalive-workflow", see "ddev/github-action-add-on-test"
 permissions:
   actions: write
 
@@ -27,10 +33,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: ddev/github-action-add-on-test@v2
-      with:
-        ddev_version: ${{ matrix.ddev_version }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        debug_enabled: ${{ github.event.inputs.debug_enabled }}
-        addon_repository: ${{ env.GITHUB_REPOSITORY }}
-        addon_ref: ${{ env.GITHUB_REF }}
+      - uses: ddev/github-action-add-on-test@v2
+        with:
+          ddev_version: ${{ matrix.ddev_version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          debug_enabled: ${{ github.event.inputs.debug_enabled }}
+          addon_repository: ${{ env.GITHUB_REPOSITORY }}
+          addon_ref: ${{ env.GITHUB_REF }}
