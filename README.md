@@ -18,23 +18,35 @@ ddev add-on get ddev/ddev-adminer && ddev restart
 
 Then you can just `ddev adminer` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
 
-To customize Adminer setup:
+## Advanced Customization
+
+To change the design:
 
 ```sh
-# drivers: server, sqlite, sqlite2, pgsql, oracle, mssql, mongo, and more via plugins
-# plugins: https://www.adminer.org/en/plugins/
 # design: https://www.adminer.org/en/#extras
-ddev dotenv set .ddev/.env.adminer \
-    --adminer-docker-image="adminer:standalone" \
-    --adminer-default-driver=server \
-    --adminer-default-db=db \
-    --adminer-default-username=db \
-    --adminer-default-password=db \
-    --adminer-plugins="tables-filter edit-calendar" \
-    --adminer-design=dracula
+ddev dotenv set .ddev/.env.adminer --adminer-design=dracula
 git add .ddev/.env.adminer
 ddev add-on get ddev/ddev-adminer && ddev restart
 ```
+
+To add more plugins:
+
+```sh
+# plugins: https://www.adminer.org/en/plugins/
+ddev dotenv set .ddev/.env.adminer --adminer-plugins="tables-filter edit-calendar"
+git add .ddev/.env.adminer
+ddev add-on get ddev/ddev-adminer && ddev restart
+```
+
+All possible customization options are listed below (avoid using them if you're unsure):
+
+- `--adminer-design`
+- `--adminer-docker-image`
+- `--adminer-default-driver`
+- `--adminer-default-db`
+- `--adminer-default-username`
+- `--adminer-default-password`
+- `--adminer-plugins`
 
 ## What does this add-on do?
 
