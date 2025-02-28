@@ -42,8 +42,8 @@ health_checks() {
   # Make sure we can hit the 9101 port successfully
   run curl -sfI https://${PROJNAME}.ddev.site:9101
   assert_success
-  assert_output --partial "HTTP/2 200"
-  assert_output --partial "adminer"
+  assert_output --partial "HTTP/2 302"
+  assert_output --partial "location: ?server=db&username=db&db=db"
 
   # Make sure `ddev adminer` works
   DDEV_DEBUG=true run ddev adminer
@@ -78,14 +78,19 @@ teardown() {
   health_checks
 }
 
-@test "install from directory with nonstandard port" {
+@test "install from directory with nonstandard port and .env.adminer" {
   set -eu -o pipefail
   run ddev config --router-http-port=8080 --router-https-port=8443
   assert_success
+  run ddev dotenv set .ddev/.env.adminer --adminer-design="dracula"
+  assert_success
+  assert_file_exist .ddev/.env.adminer
   echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
   run ddev add-on get "${DIR}"
   assert_success
   run ddev restart -y
   assert_success
+  run ddev exec -s adminer 'echo $ADMINER_DESIGN'
+  assert_output "dracula"
   health_checks
 }

@@ -9,11 +9,6 @@ project_files:
 ddev_version_constraint: '>= v1.24.2'
 
 pre_install_actions:
-  # Ensure we're on DDEV 1.23+. It's required for the `adminer` command (launch by port).
-  - |
-    #ddev-nodisplay
-    #ddev-description:Checking DDEV version
-    (ddev debug capabilities | grep corepack >/dev/null) || (echo "Please upgrade DDEV to v1.23+ to use this add-on." && false)
   - |
     #ddev-nodisplay
     #ddev-description:Removing old adminer files
