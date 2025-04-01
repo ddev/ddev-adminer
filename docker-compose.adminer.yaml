@@ -25,6 +25,7 @@ services:
     configs:
       - source: adminer-index.php
         target: /var/www/html/index.php
+        mode: "0444"
 
 configs:
   adminer-index.php:
