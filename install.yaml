@@ -1,12 +1,9 @@
 name: adminer
 
-# list of files and directories listed that are copied into project .ddev directory
 project_files:
-- docker-compose.adminer.yaml
-- docker-compose.adminer_norouter.yaml
-- commands/host/adminer
-
-ddev_version_constraint: '>= v1.24.2'
+  - docker-compose.adminer.yaml
+  - docker-compose.adminer_norouter.yaml
+  - commands/host/adminer
 
 pre_install_actions:
   - |
@@ -27,6 +24,15 @@ pre_install_actions:
     if [ "${has_old_files}" = true ]; then
       exit 2
     fi
+  - |
+    #ddev-nodisplay
+    #ddev-description:Check for db service
+    if ddev debug configyaml 2>/dev/null | grep omit_containers | grep -q db; then
+      echo "Unable to install the add-on because no db service was found"
+      exit 3
+    fi
+
+ddev_version_constraint: '>= v1.24.3'
 
 post_install_actions:
   - |

@@ -1,22 +1,32 @@
-[![tests](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml/badge.svg)](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2025.svg)
+[![tests](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/ddev/ddev-adminer/actions/workflows/tests.yml?query=branch%3Amain)
+[![project is maintained](https://img.shields.io/maintenance/yes/2025.svg)](https://github.com/ddev/ddev-adminer/commits)
+[![release](https://img.shields.io/github/v/release/ddev/ddev-adminer)](https://github.com/ddev/ddev-adminer/releases/latest)
 
-# DDEV Adminer Service
+# DDEV Adminer
 
-## What is this?
+## Overview
 
-This repository allows you to quickly install the [Adminer](https://www.adminer.org/) database manager into a [DDEV](https://ddev.readthedocs.io) project using just `ddev add-on get ddev/ddev-adminer`.
+[Adminer](https://www.adminer.org/) is a full-featured database management tool written in PHP.
 
-Adminer is a full-featured database management tool written in PHP. This service currently ships the [official adminer container](https://hub.docker.com/_/adminer) with no _external_ plugins.
+This add-on integrates Adminer into your [DDEV](https://ddev.com/) project.
 
 Adminer works with MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, and MongoDB.
 
 ## Installation
 
 ```sh
-ddev add-on get ddev/ddev-adminer && ddev restart
+ddev add-on get ddev/ddev-adminer
+ddev restart
 ```
 
-Then you can just `ddev adminer` or use `ddev describe` to get the URL (`https://<project>.ddev.site:9101`).
+After installation, make sure to commit the `.ddev` directory to version control.
+
+## Usage
+
+| Command | Description |
+| ------- | ----------- |
+| `ddev adminer` | Open Adminer in your browser (`https://<project>.ddev.site:9101`) |
+| `ddev describe` | View service status and used ports for Adminer |
 
 ## Advanced Customization
 
@@ -25,32 +35,37 @@ To change the design:
 ```sh
 # design: https://www.adminer.org/en/#extras
 ddev dotenv set .ddev/.env.adminer --adminer-design=dracula
-git add .ddev/.env.adminer
-ddev add-on get ddev/ddev-adminer && ddev restart
+ddev add-on get ddev/ddev-adminer
+ddev restart
 ```
+
+Make sure to commit the `.ddev/.env.adminer` file to version control.
 
 To add more plugins:
 
 ```sh
 # plugins: https://www.adminer.org/en/plugins/
 ddev dotenv set .ddev/.env.adminer --adminer-plugins="tables-filter edit-calendar"
-git add .ddev/.env.adminer
-ddev add-on get ddev/ddev-adminer && ddev restart
+ddev add-on get ddev/ddev-adminer
+ddev restart
 ```
 
-All possible customization options are listed below (avoid using them if you're unsure):
+Make sure to commit the `.ddev/.env.adminer` file to version control.
 
-- `--adminer-design`
-- `--adminer-docker-image`
-- `--adminer-default-driver`
-- `--adminer-default-db`
-- `--adminer-default-username`
-- `--adminer-default-password`
-- `--adminer-plugins`
+All customization options (use with caution):
 
-## What does this add-on do?
+| Variable | Flag | Default |
+| -------- | ---- | ------- |
+| `ADMINER_DEFAULT_DB` | `--adminer-default-db` | `db` |
+| `ADMINER_DEFAULT_DRIVER` | `--adminer-default-driver` | `server` |
+| `ADMINER_DEFAULT_PASSWORD` | `--adminer-default-password` | `db` |
+| `ADMINER_DEFAULT_USERNAME` | `--adminer-default-username` | `db` |
+| `ADMINER_DESIGN` | `--adminer-design` | `` |
+| `ADMINER_DOCKER_IMAGE` | `--adminer-docker-image` | `adminer:standalone` |
+| `ADMINER_PLUGINS` | `--adminer-plugins` | `tables-filter` |
 
-* Adds the adminer container as a service
+## Credits
 
-**Contributed by [@bserem](https://github.com/bserem).**
-**Maintained by DDEV team.**
+**Contributed by [@bserem](https://github.com/bserem)**
+
+**Maintained by the [DDEV team](https://ddev.com/support-ddev/)**
