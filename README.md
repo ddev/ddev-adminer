@@ -62,7 +62,7 @@ All customization options (use with caution):
 | `ADMINER_DEFAULT_USERNAME` | `--adminer-default-username` | `db` |
 | `ADMINER_DESIGN` | `--adminer-design` | `` |
 | `ADMINER_DOCKER_IMAGE` | `--adminer-docker-image` | `adminer:standalone` |
-| `ADMINER_PLUGINS` | `--adminer-plugins` | `tables-filter` |
+| `ADMINER_PLUGINS` | `--adminer-plugins` | `` |
 
 ## Credits
 
