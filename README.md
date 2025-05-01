@@ -52,6 +52,8 @@ ddev add-on get ddev/ddev-adminer
 ddev restart
 ```
 
+If a plugin *requires* parameters, refer to the [official documentation](https://hub.docker.com/_/adminer) for more details.
+
 Make sure to commit the `.ddev/.env.adminer` file to version control.
 
 All customization options (use with caution):
