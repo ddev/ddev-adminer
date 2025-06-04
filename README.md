@@ -54,6 +54,8 @@ ddev restart
 
 If a plugin *requires* parameters, refer to the [official documentation](https://hub.docker.com/_/adminer) for more details.
 
+For user-contributed plugins, see [example](https://github.com/ddev/ddev-adminer/issues/43).
+
 Make sure to commit the `.ddev/.env.adminer` file to version control.
 
 All customization options (use with caution):
