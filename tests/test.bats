@@ -36,6 +36,8 @@ setup() {
   assert_success
   run ddev start -y
   assert_success
+
+  export ADMINER_DESIGN=""
 }
 
 health_checks() {
@@ -49,6 +51,20 @@ health_checks() {
   DDEV_DEBUG=true run ddev adminer
   assert_success
   assert_output --partial "FULLURL https://${PROJNAME}.ddev.site:9101"
+
+  if [ "${ADMINER_DESIGN}" != "" ]; then
+    run ddev exec -s adminer 'echo $ADMINER_DESIGN'
+    assert_output "${ADMINER_DESIGN}"
+
+    run curl -sfI https://${PROJNAME}.ddev.site:9101/adminer.css
+    assert_success
+    assert_output --partial "HTTP/2 302"
+    assert_output --partial "content-type: text/css"
+
+    run curl -sfI https://${PROJNAME}.ddev.site:9101/adminer.css
+    assert_success
+    assert_output --partial "${ADMINER_DESIGN}"
+  fi
 }
 
 teardown() {
@@ -86,9 +102,12 @@ teardown() {
 
 @test "install from directory with nonstandard port and .env.adminer" {
   set -eu -o pipefail
+
+  export ADMINER_DESIGN=dracula
+
   run ddev config --router-http-port=8080 --router-https-port=8443
   assert_success
-  run ddev dotenv set .ddev/.env.adminer --adminer-design="dracula"
+  run ddev dotenv set .ddev/.env.adminer --adminer-design="${ADMINER_DESIGN}"
   assert_success
   assert_file_exist .ddev/.env.adminer
   echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
@@ -96,7 +115,5 @@ teardown() {
   assert_success
   run ddev restart -y
   assert_success
-  run ddev exec -s adminer 'echo $ADMINER_DESIGN'
-  assert_output "dracula"
   health_checks
 }
