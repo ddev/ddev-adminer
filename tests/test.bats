@@ -58,10 +58,10 @@ health_checks() {
 
     run curl -sfI https://${PROJNAME}.ddev.site:9101/adminer.css
     assert_success
-    assert_output --partial "HTTP/2 302"
+    assert_output --partial "HTTP/2 200"
     assert_output --partial "content-type: text/css"
 
-    run curl -sfI https://${PROJNAME}.ddev.site:9101/adminer.css
+    run curl -sf https://${PROJNAME}.ddev.site:9101/adminer.css
     assert_success
     assert_output --partial "${ADMINER_DESIGN}"
   fi
