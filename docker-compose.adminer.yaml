@@ -27,11 +27,20 @@ services:
       - source: ddev-adminer.php
         target: /var/www/html/ddev-adminer.php
         mode: "0444"
+      - source: entrypoint.sh
+        target: /usr/local/bin/entrypoint.sh
+        mode: "0755"
 
 configs:
   ddev-adminer.php:
     content: |
       <?php
+        // Let static files be served directly
+        $$uri = parse_url($$_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        if (is_file('/var/www/html' . $$uri)) {
+          return false;
+        }
+
         if (!count($$_GET)) {
           if ($$_ENV['ADMINER_DEFAULT_DRIVER'] === 'mysql') {
             $$_ENV['ADMINER_DEFAULT_DRIVER'] = 'server';
@@ -48,3 +57,27 @@ configs:
         }
         include './index.php';
       ?>
+
+  entrypoint.sh:
+    content: |
+      #!/bin/sh
+      set -e
+      if [ -n "$$ADMINER_DESIGN" ]; then
+        # Only create link on initial start, to ensure that explicit changes to
+        # adminer.css after the container was started once are preserved.
+        if [ ! -e .adminer-init ]; then
+          for css_file in adminer.css adminer-dark.css; do
+            if [ -f "designs/$$ADMINER_DESIGN/$$css_file" ]; then
+              ln -sf "designs/$$ADMINER_DESIGN/$$css_file" adminer.css
+              break
+            fi
+          done
+        fi
+      fi
+      number=1
+      for PLUGIN in $$ADMINER_PLUGINS; do
+        php plugin-loader.php "$$PLUGIN" > plugins-enabled/$$(printf "%03d" $$number)-$$PLUGIN.php
+        number=$$(($$number+1))
+      done
+      touch .adminer-init || true
+      exec "$$@"
