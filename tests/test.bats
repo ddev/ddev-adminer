@@ -32,20 +32,24 @@ setup() {
   export DDEV_NO_INSTRUMENTATION=true
   ddev delete -Oy "${PROJNAME}" >/dev/null 2>&1 || true
   cd "${TESTDIR}"
+  echo > .cookie-jar.txt
   run ddev config --project-name="${PROJNAME}" --project-tld=ddev.site
   assert_success
   run ddev start -y
   assert_success
 
   export ADMINER_DESIGN=""
+  export TEST_REDIRECT_LOCATION="?server=db&username=db&db=db"
 }
 
 health_checks() {
   # Make sure we can hit the 9101 port successfully
-  run curl -sfI https://${PROJNAME}.ddev.site:9101
+  run curl -sfIL --cookie .cookie-jar.txt --cookie-jar .cookie-jar.txt https://${PROJNAME}.ddev.site:9101
   assert_success
   assert_output --partial "HTTP/2 302"
-  assert_output --partial "location: ?server=db&username=db&db=db"
+  assert_output --partial "location: ${TEST_REDIRECT_LOCATION}"
+  # Make sure the user is fully authenticated after redirecting
+  assert_output --partial "HTTP/2 200"
 
   # Make sure `ddev adminer` works
   DDEV_DEBUG=true run ddev adminer
@@ -115,5 +119,32 @@ teardown() {
   assert_success
   run ddev restart -y
   assert_success
+  health_checks
+}
+
+# bats test_tags=sqlite
+@test "install from directory with sqlite and .env.adminer" {
+  set -eu -o pipefail
+
+  run ddev config --router-http-port=8080 --router-https-port=8443
+  assert_success
+  run ddev dotenv set .ddev/.env.adminer \
+    --adminer-default-driver=sqlite \
+    --adminer-default-username="" \
+    --adminer-default-password="" \
+    --adminer-default-server="" \
+    --adminer-default-db=/mnt/ddev_app/test.sqlite
+  assert_success
+  assert_file_exist .ddev/.env.adminer
+  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
+  run ddev add-on get "${DIR}"
+  assert_success
+  run ddev restart -y
+  assert_success
+  # Create the test sqlite database
+  run ddev exec sqlite3 test.sqlite "CREATE TABLE items(id INTEGER PRIMARY KEY, name TEXT); INSERT INTO items(name) VALUES ('alpha'), ('beta');"
+  assert_success
+  # Specify the redirect target
+  export TEST_REDIRECT_LOCATION="?sqlite=&username=&db=%2Fmnt%2Fddev_app%2Ftest.sqlite"
   health_checks
 }

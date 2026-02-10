@@ -102,17 +102,16 @@ configs:
       <?php
       /**
        * Adminer plugin for enabling passwordless login in DDEV.
-       * This is useful for better SQLite support where passwords might not be required.
+       * By default, only the SQLite driver is supported.
        */
       class DDEVPasswordlessLogin extends Adminer\Plugin {
 
         function login($$login, $$password) {
-          if ($$password === '') {
+          if (Adminer\JUSH === 'sqlite' && empty($$password)) {
             return true;
           }
         }
       }
-      ?>
 
   entrypoint.sh:
     content: |

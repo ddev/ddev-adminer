@@ -32,8 +32,16 @@ After installation, make sure to commit the `.ddev` directory to version control
 
 ### SQLite
 
-When connecting to an SQLite database, the project files are available under the `/mnt/ddev_app` mount.
-So you may reference the database from that directory.
+When connecting to an SQLite database, the project files are available under the `/mnt/ddev_app` mount, in the example below, `test.sqlite` is located in the project root:
+
+```bash
+ddev dotenv set .ddev/.env.adminer \
+    --adminer-default-driver=sqlite \
+    --adminer-default-username="" \
+    --adminer-default-password="" \
+    --adminer-default-server="" \
+    --adminer-default-db=/mnt/ddev_app/test.sqlite
+```
 
 Make sure the owner of the SQLite database file is the same as the user which adminer is running as.
 
@@ -75,7 +83,7 @@ All customization options (use with caution):
 | `ADMINER_DEFAULT_USERNAME` | `--adminer-default-username` | `db` |
 | `ADMINER_DESIGN` | `--adminer-design` | `` |
 | `ADMINER_DOCKER_IMAGE` | `--adminer-docker-image` | `adminer:standalone` |
-| `ADMINER_PLUGINS` | `--adminer-plugins` | `tables-filter` |
+| `ADMINER_PLUGINS` | `--adminer-plugins` | `ddev-passwordless-login tables-filter` |
 
 ## Credits
 
