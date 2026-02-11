@@ -23,12 +23,6 @@ pre_install_actions:
     if [ "${has_old_files}" = true ]; then
       exit 2
     fi
-  - |
-    #ddev-description:Check for db service
-    if ddev utility configyaml 2>/dev/null | grep omit_containers | grep -q db; then
-      echo "Unable to install the add-on because no db service was found"
-      exit 3
-    fi
 
 ddev_version_constraint: '>= v1.24.10'
 
