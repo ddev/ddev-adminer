@@ -166,7 +166,7 @@ teardown() {
 @test "install from directory with sqlite and .env.adminer" {
   set -eu -o pipefail
 
-  run ddev config --router-http-port=8080 --router-https-port=8443
+  run ddev config --router-http-port=8080 --router-https-port=8443 --omit-containers=db
   assert_success
   run ddev dotenv set .ddev/.env.adminer \
     --adminer-default-driver=sqlite \
