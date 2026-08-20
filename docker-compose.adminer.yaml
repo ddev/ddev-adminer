@@ -2,67 +2,33 @@
 services:
   adminer:
     container_name: ddev-${DDEV_SITENAME}-adminer
-    image: ${ADMINER_DOCKER_IMAGE:-adminer:standalone}-${DDEV_SITENAME}-built
-    build:
-      dockerfile_inline: |
-        ARG ADMINER_DOCKER_IMAGE="scratch"
-        FROM $$ADMINER_DOCKER_IMAGE
-
-        # Switch the adminer user.
-        USER root
-        # Accept build arguments for user creation
-        ARG username
-        ARG uid
-        ARG gid
-        # Free up the uid and gid if they're currently used, but ensure the original adminer group still exists
-        RUN existing_user=$(getent passwd "$$uid" | cut -d: -f1); \
-            existing_group=$(getent group "$$gid" | cut -d: -f1); \
-            existing_adminer_gid=$(getent group adminer | cut -d: -f3); \
-            if [[ -n "$$existing_group" ]]; then echo "Deleting existing group: $$existing_group ($$gid)"; delgroup "$$existing_group"; fi; \
-            if [[ -n "$$existing_user" ]]; then echo "Deleting existing user: $$existing_user ($$uid)"; deluser "$$existing_user"; fi; \
-            addgroup -g "$$existing_adminer_gid" adminer || addgroup adminer || true
-        # Ensure tty group exists
-        RUN getent group tty || addgroup tty
-        # Create group and user, trying multiple methods for compatibility
-        RUN (addgroup -g "$$gid" "$$username" || addgroup "$$username" || true) && \
-            (adduser -G tty -s "/bin/sh" -D -u "$$uid" "$$username" || \
-            adduser -G tty -s "/bin/sh" -D "$$username" || \
-            adduser -G tty -s "/bin/sh" "$$username") && \
-            addgroup "$$username" adminer
-        # Ensure the plugins-enabled directory is writable by the group.
-        RUN chmod 775 /var/www/html/plugins-enabled
-        # Switch to the created user
-        USER "$$username"
-      args:
-        ADMINER_DOCKER_IMAGE: ${ADMINER_DOCKER_IMAGE:-adminer:standalone}
-        username: ${DDEV_USER}
-        uid: ${DDEV_UID}
-        gid: ${DDEV_GID}
+    image: ${ADMINER_DOCKER_IMAGE:-adminer:6-standalone}
+    hostname: ${DDEV_SITENAME}-adminer
+    # Started as root, entrypoint.sh drops to the host user.
+    user: root
     environment:
       - ADMINER_DEFAULT_DRIVER=${ADMINER_DEFAULT_DRIVER:-${DDEV_DATABASE_FAMILY:-server}}
       - ADMINER_DEFAULT_SERVER=${ADMINER_DEFAULT_SERVER:-db}
       - ADMINER_DEFAULT_DB=${ADMINER_DEFAULT_DB:-db}
       - ADMINER_DEFAULT_USERNAME=${ADMINER_DEFAULT_USERNAME:-db}
       - ADMINER_DEFAULT_PASSWORD=${ADMINER_DEFAULT_PASSWORD:-db}
-      - ADMINER_PLUGINS=${ADMINER_PLUGINS:-ddev-passwordless-login tables-filter}
+      - ADMINER_PLUGINS=${ADMINER_PLUGINS:-tables-filter}
       - ADMINER_DESIGN=${ADMINER_DESIGN:-}
-      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - DDEV_UID=${DDEV_UID}
+      - DDEV_GID=${DDEV_GID}
+      - VIRTUAL_HOST=${DDEV_HOSTNAME}
       - HTTP_EXPOSE=9100:8080
       - HTTPS_EXPOSE=9101:8080
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
-      com.ddev.approot: $DDEV_APPROOT
+      com.ddev.approot: ${DDEV_APPROOT}
     volumes:
       - ".:/mnt/ddev_config"
       - "../:/mnt/ddev_app"
       - "ddev-global-cache:/mnt/ddev-global-cache"
     depends_on:
       - db
-    command: ["php", "-S", "[::]:8080", "-t", "/var/www/html", "ddev-adminer.php"]
     configs:
-      - source: ddev-adminer.php
-        target: /var/www/html/ddev-adminer.php
-        mode: "0444"
       - source: ddev-passwordless-login.php
         target: /var/www/html/plugins/ddev-passwordless-login.php
         mode: "0444"
@@ -71,43 +37,33 @@ services:
         mode: "0755"
 
 configs:
-  ddev-adminer.php:
-    content: |
-      <?php
-        // Let static files be served directly
-        $$uri = parse_url($$_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        if (is_file('/var/www/html' . $$uri)) {
-          return false;
-        }
-
-        if (!count($$_GET)) {
-          if ($$_ENV['ADMINER_DEFAULT_DRIVER'] === 'mysql') {
-            $$_ENV['ADMINER_DEFAULT_DRIVER'] = 'server';
-          } else if ($$_ENV['ADMINER_DEFAULT_DRIVER'] === 'postgres') {
-            $$_ENV['ADMINER_DEFAULT_DRIVER'] = 'pgsql';
-          }
-          $$_POST['auth'] = [
-            'driver' => $$_ENV['ADMINER_DEFAULT_DRIVER'],
-            'server' => $$_ENV['ADMINER_DEFAULT_SERVER'],
-            'db' => $$_ENV['ADMINER_DEFAULT_DB'],
-            'username' => $$_ENV['ADMINER_DEFAULT_USERNAME'],
-            'password' => $$_ENV['ADMINER_DEFAULT_PASSWORD'],
-          ];
-        }
-        include './index.php';
-      ?>
-
   ddev-passwordless-login.php:
     content: |
       <?php
       /**
-       * Adminer plugin for enabling passwordless login in DDEV.
-       * By default, only the SQLite driver is supported.
+       * Adminer plugin for logging in with the DDEV credentials.
+       *
+       * Adminer connects only with a password from its session, so seed it and
+       * redirect to the URL holding the other credentials.
        */
       class DDEVPasswordlessLogin extends Adminer\Plugin {
+        function __construct() {
+          if (count($$_GET)) {
+            return;
+          }
+          $$driver = ['mysql' => 'server', 'postgres' => 'pgsql'][$$_ENV['ADMINER_DEFAULT_DRIVER']] ?? $$_ENV['ADMINER_DEFAULT_DRIVER'];
+          $$_SESSION['pwds'][$$driver][$$_ENV['ADMINER_DEFAULT_SERVER']][$$_ENV['ADMINER_DEFAULT_USERNAME']] = $$_ENV['ADMINER_DEFAULT_PASSWORD'];
+          header('Location: ?' . http_build_query([
+            $$driver => $$_ENV['ADMINER_DEFAULT_SERVER'],
+            'username' => $$_ENV['ADMINER_DEFAULT_USERNAME'],
+            'db' => $$_ENV['ADMINER_DEFAULT_DB'] ?: null,
+          ]));
+          exit;
+        }
 
         function login($$login, $$password) {
-          if (Adminer\JUSH === 'sqlite' && empty($$password)) {
+          // Adminer refuses a login without a password, SQLite has none.
+          if (Adminer\JUSH === 'sqlite') {
             return true;
           }
         }
@@ -117,10 +73,18 @@ configs:
     content: |
       #!/bin/sh
       set -e
+      # Serve as the host user, so that SQLite databases in the project keep its
+      # ownership. Only the uid and gid matter, the name is cosmetic.
+      if [ "$$(id -u)" = 0 ]; then
+        chown "$$DDEV_UID:$$DDEV_GID" plugins-enabled
+        grep -q '^ddev:' /etc/passwd || echo "ddev:x:$$DDEV_UID:$$DDEV_GID:::/bin/sh" >> /etc/passwd
+        exec su ddev -s /bin/sh -c 'exec "$$@"' -- sh "$$0" "$$@"
+      fi
       if [ -n "$$ADMINER_DESIGN" ]; then
         # Only create link on initial start, to ensure that explicit changes to
         # adminer.css after the container was started once are preserved.
         if [ ! -e .adminer-init ]; then
+          # See https://github.com/TimWolla/docker-adminer/pull/216
           for css_file in adminer.css adminer-dark.css; do
             if [ -f "designs/$$ADMINER_DESIGN/$$css_file" ]; then
               ln -sf "designs/$$ADMINER_DESIGN/$$css_file" adminer.css
@@ -130,7 +94,8 @@ configs:
         fi
       fi
       number=1
-      for PLUGIN in $$ADMINER_PLUGINS; do
+      # Always enable the login, ignoring a duplicate from an older config.
+      for PLUGIN in $$(printf '%s\n' ddev-passwordless-login $$ADMINER_PLUGINS | awk '!seen[$$0]++'); do
         php plugin-loader.php "$$PLUGIN" > plugins-enabled/$$(printf "%03d" $$number)-$$PLUGIN.php
         number=$$(($$number+1))
       done
