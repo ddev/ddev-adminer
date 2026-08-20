@@ -53,6 +53,7 @@ configs:
           }
           $$driver = ['mysql' => 'server', 'postgres' => 'pgsql'][$$_ENV['ADMINER_DEFAULT_DRIVER']] ?? $$_ENV['ADMINER_DEFAULT_DRIVER'];
           $$_SESSION['pwds'][$$driver][$$_ENV['ADMINER_DEFAULT_SERVER']][$$_ENV['ADMINER_DEFAULT_USERNAME']] = $$_ENV['ADMINER_DEFAULT_PASSWORD'];
+          $$_SESSION['db'][$$driver][$$_ENV['ADMINER_DEFAULT_SERVER']][$$_ENV['ADMINER_DEFAULT_USERNAME']][$$_ENV['ADMINER_DEFAULT_DB']] = true;
           header('Location: ?' . http_build_query([
             $$driver => $$_ENV['ADMINER_DEFAULT_SERVER'],
             'username' => $$_ENV['ADMINER_DEFAULT_USERNAME'],
