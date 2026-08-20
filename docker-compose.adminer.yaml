@@ -26,8 +26,6 @@ services:
       - ".:/mnt/ddev_config"
       - "../:/mnt/ddev_app"
       - "ddev-global-cache:/mnt/ddev-global-cache"
-    depends_on:
-      - db
     configs:
       - source: ddev-passwordless-login.php
         target: /var/www/html/plugins/ddev-passwordless-login.php

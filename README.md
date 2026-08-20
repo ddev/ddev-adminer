@@ -11,7 +11,7 @@
 
 This add-on integrates Adminer into your [DDEV](https://ddev.com/) project.
 
-Adminer works with MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, and MongoDB.
+Adminer works with MySQL, MariaDB, PostgreSQL, and SQLite.
 
 ## Installation
 
