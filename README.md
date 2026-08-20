@@ -37,9 +37,6 @@ When connecting to an SQLite database, the project files are available under the
 ```bash
 ddev dotenv set .ddev/.env.adminer \
     --adminer-default-driver=sqlite \
-    --adminer-default-username="" \
-    --adminer-default-password="" \
-    --adminer-default-server="" \
     --adminer-default-db=/mnt/ddev_app/test.sqlite
 ```
 
@@ -62,7 +59,7 @@ To add more plugins:
 
 ```bash
 # plugins: https://www.adminer.org/en/plugins/
-ddev dotenv set .ddev/.env.adminer --adminer-plugins="ddev-passwordless-login tables-filter edit-calendar"
+ddev dotenv set .ddev/.env.adminer --adminer-plugins="tables-filter edit-calendar"
 ddev add-on get ddev/ddev-adminer
 ddev restart
 ```
@@ -82,8 +79,8 @@ All customization options (use with caution):
 | `ADMINER_DEFAULT_PASSWORD` | `--adminer-default-password` | `db` |
 | `ADMINER_DEFAULT_USERNAME` | `--adminer-default-username` | `db` |
 | `ADMINER_DESIGN` | `--adminer-design` | `` |
-| `ADMINER_DOCKER_IMAGE` | `--adminer-docker-image` | `adminer:standalone` |
-| `ADMINER_PLUGINS` | `--adminer-plugins` | `ddev-passwordless-login tables-filter` |
+| `ADMINER_DOCKER_IMAGE` | `--adminer-docker-image` | `adminer:6-standalone` |
+| `ADMINER_PLUGINS` | `--adminer-plugins` | `tables-filter` |
 
 ## Credits
 

@@ -40,6 +40,8 @@ setup() {
 
   export ADMINER_DESIGN=""
   export TEST_REDIRECT_LOCATION="?server=db&username=db&db=db"
+  export TEST_PAGE_TITLE="Database: db - db - Adminer"
+  export TEST_SQLITE_TABLE=""
 }
 
 health_checks() {
@@ -50,6 +52,23 @@ health_checks() {
   assert_output --partial "location: ${TEST_REDIRECT_LOCATION}"
   # Make sure the user is fully authenticated after redirecting
   assert_output --partial "HTTP/2 200"
+
+  # Make sure the database is shown and not the login form
+  run curl -sfL --cookie .cookie-jar.txt --cookie-jar .cookie-jar.txt https://${PROJNAME}.ddev.site:9101
+  assert_success
+  assert_output --partial "<title>${TEST_PAGE_TITLE}</title>"
+  refute_output --partial "auth[password]"
+
+  # Make sure Adminer serves as the host user, it has to write project files
+  run ddev exec -s adminer 'stat -c %u /proc/1; echo $DDEV_UID'
+  assert_success
+  assert_equal "${lines[0]}" "${lines[1]}"
+
+  # Make sure the login is enabled once, next to the plugins from ADMINER_PLUGINS
+  run ddev exec -s adminer 'ls plugins-enabled'
+  assert_success
+  assert_output "001-ddev-passwordless-login.php
+002-tables-filter.php"
 
   # Make sure `ddev adminer` works
   DDEV_DEBUG=true run ddev adminer
@@ -68,6 +87,25 @@ health_checks() {
     run curl -sf https://${PROJNAME}.ddev.site:9101/adminer.css
     assert_success
     assert_output --partial "${ADMINER_DESIGN}"
+  fi
+
+  if [ "${TEST_SQLITE_TABLE}" != "" ]; then
+    # Make sure the table of the database is listed
+    run curl -sfL --cookie .cookie-jar.txt --cookie-jar .cookie-jar.txt https://${PROJNAME}.ddev.site:9101
+    assert_success
+    assert_output --partial "${TEST_SQLITE_TABLE}"
+
+    # Make sure Adminer can write the database file owned by the host user,
+    # it only accepts a write together with its CSRF token
+    sql_url="https://${PROJNAME}.ddev.site:9101/${TEST_REDIRECT_LOCATION}&sql="
+    token="$(curl -sf --cookie .cookie-jar.txt --cookie-jar .cookie-jar.txt "${sql_url}" | grep -oE "name='token' value='[0-9]+:[0-9]+" | grep -oE '[0-9]+:[0-9]+')"
+    run curl -sf --cookie .cookie-jar.txt --cookie-jar .cookie-jar.txt \
+      --data-urlencode "query=INSERT INTO ${TEST_SQLITE_TABLE}(name) VALUES ('gamma');" \
+      --data "token=${token}" "${sql_url}"
+    assert_success
+    assert_output --partial "Query executed OK"
+    run ddev exec sqlite3 test.sqlite "SELECT name FROM ${TEST_SQLITE_TABLE} WHERE name = 'gamma';"
+    assert_output "gamma"
   fi
 }
 
@@ -111,7 +149,9 @@ teardown() {
 
   run ddev config --router-http-port=8080 --router-https-port=8443
   assert_success
-  run ddev dotenv set .ddev/.env.adminer --adminer-design="${ADMINER_DESIGN}"
+  # ddev-passwordless-login is enabled on its own, older configs may list it
+  run ddev dotenv set .ddev/.env.adminer --adminer-design="${ADMINER_DESIGN}" \
+    --adminer-plugins="ddev-passwordless-login tables-filter"
   assert_success
   assert_file_exist .ddev/.env.adminer
   echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
@@ -130,9 +170,6 @@ teardown() {
   assert_success
   run ddev dotenv set .ddev/.env.adminer \
     --adminer-default-driver=sqlite \
-    --adminer-default-username="" \
-    --adminer-default-password="" \
-    --adminer-default-server="" \
     --adminer-default-db=/mnt/ddev_app/test.sqlite
   assert_success
   assert_file_exist .ddev/.env.adminer
@@ -144,7 +181,9 @@ teardown() {
   # Create the test sqlite database
   run ddev exec sqlite3 test.sqlite "CREATE TABLE items(id INTEGER PRIMARY KEY, name TEXT); INSERT INTO items(name) VALUES ('alpha'), ('beta');"
   assert_success
-  # Specify the redirect target
-  export TEST_REDIRECT_LOCATION="?sqlite=&username=&db=%2Fmnt%2Fddev_app%2Ftest.sqlite"
+  # Specify the redirect target, the unused credentials are passed through
+  export TEST_REDIRECT_LOCATION="?sqlite=db&username=db&db=%2Fmnt%2Fddev_app%2Ftest.sqlite"
+  export TEST_PAGE_TITLE="Database: /mnt/ddev_app/test.sqlite - db - Adminer"
+  export TEST_SQLITE_TABLE=items
   health_checks
 }
