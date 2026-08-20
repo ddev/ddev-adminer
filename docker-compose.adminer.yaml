@@ -43,8 +43,8 @@ configs:
       /**
        * Adminer plugin for logging in with the DDEV credentials.
        *
-       * Adminer connects only with a password from its session, so seed it and
-       * redirect to the URL holding the other credentials.
+       * Adminer connects only with a password from its session, so store it the
+       * same way its own login does and redirect to the authenticated URL.
        */
       class DDEVPasswordlessLogin extends Adminer\Plugin {
         function __construct() {
@@ -52,14 +52,11 @@ configs:
             return;
           }
           $$driver = ['mysql' => 'server', 'postgres' => 'pgsql'][$$_ENV['ADMINER_DEFAULT_DRIVER']] ?? $$_ENV['ADMINER_DEFAULT_DRIVER'];
-          $$_SESSION['pwds'][$$driver][$$_ENV['ADMINER_DEFAULT_SERVER']][$$_ENV['ADMINER_DEFAULT_USERNAME']] = $$_ENV['ADMINER_DEFAULT_PASSWORD'];
-          $$_SESSION['db'][$$driver][$$_ENV['ADMINER_DEFAULT_SERVER']][$$_ENV['ADMINER_DEFAULT_USERNAME']][$$_ENV['ADMINER_DEFAULT_DB']] = true;
-          header('Location: ?' . http_build_query([
-            $$driver => $$_ENV['ADMINER_DEFAULT_SERVER'],
-            'username' => $$_ENV['ADMINER_DEFAULT_USERNAME'],
-            'db' => $$_ENV['ADMINER_DEFAULT_DB'] ?: null,
-          ]));
-          exit;
+          $$server = $$_ENV['ADMINER_DEFAULT_SERVER'];
+          $$username = $$_ENV['ADMINER_DEFAULT_USERNAME'];
+          $$db = $$_ENV['ADMINER_DEFAULT_DB'];
+          Adminer\set_password($$driver, $$server, $$username, $$_ENV['ADMINER_DEFAULT_PASSWORD']);
+          Adminer\redirect(Adminer\auth_url($$driver, $$server, $$username, $$db));
         }
 
         function login($$login, $$password) {

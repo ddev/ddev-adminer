@@ -182,7 +182,7 @@ teardown() {
   run ddev exec sqlite3 test.sqlite "CREATE TABLE items(id INTEGER PRIMARY KEY, name TEXT); INSERT INTO items(name) VALUES ('alpha'), ('beta');"
   assert_success
   # Specify the redirect target, the unused credentials are passed through
-  export TEST_REDIRECT_LOCATION="?sqlite=db&username=db&db=%2Fmnt%2Fddev_app%2Ftest.sqlite"
+  export TEST_REDIRECT_LOCATION="?sqlite=db&username=db&db=/mnt/ddev_app/test.sqlite"
   export TEST_PAGE_TITLE="Database: /mnt/ddev_app/test.sqlite - db - Adminer"
   export TEST_SQLITE_TABLE=items
   health_checks
