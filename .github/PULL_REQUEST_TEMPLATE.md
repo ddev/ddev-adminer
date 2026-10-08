@@ -1,3 +1,6 @@
+## Short Summary (TL;DR)
+
+<!-- Required. One or two sentences a reviewer can read at a glance: what this changes, and why. Write it last, but put it here first. If it needs a paragraph, the detail belongs in the sections below. -->
 
 ## The Issue
 
@@ -14,7 +17,7 @@
 <!-- If this PR changes logic, consider adding additional steps or context to the instructions below. -->
 
 ```bash
-ddev add-on get https://github.com/ddev/ddev-adminer/tarball/refs/pull/REPLACE_ME_WITH_THIS_PR_NUMBER/head
+ddev add-on get ddev/ddev-adminer --pr REPLACE_ME_WITH_THIS_PR_NUMBER
 ddev restart
 ```
 
