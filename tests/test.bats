@@ -48,7 +48,7 @@ health_checks() {
   # Make sure we can hit the 9101 port successfully
   run curl -sfIL --cookie .cookie-jar.txt --cookie-jar .cookie-jar.txt https://${PROJNAME}.ddev.site:9101
   assert_success
-  assert_output --partial "HTTP/2 302"
+  assert_output --partial "HTTP/2 303"
   assert_output --partial "location: ${TEST_REDIRECT_LOCATION}"
   # Make sure the user is fully authenticated after redirecting
   assert_output --partial "HTTP/2 200"
