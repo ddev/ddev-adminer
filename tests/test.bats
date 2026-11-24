@@ -98,7 +98,11 @@ health_checks() {
     # Make sure Adminer can write the database file owned by the host user,
     # it only accepts a write together with its CSRF token
     sql_url="https://${PROJNAME}.ddev.site:9101/${TEST_REDIRECT_LOCATION}&sql="
-    token="$(curl -sf --cookie .cookie-jar.txt --cookie-jar .cookie-jar.txt "${sql_url}" | grep -oE "name='token' value='[0-9]+:[0-9]+" | grep -oE '[0-9]+:[0-9]+')"
+    run curl -sf --cookie .cookie-jar.txt --cookie-jar .cookie-jar.txt "${sql_url}"
+    assert_success
+    # The token format changes between Adminer releases (digits before 6.3.1, hex after)
+    assert_output --regexp "name='token' value='[^']+'"
+    token="$(grep -oE "name='token' value='[^']+'" <<<"${output}" | head -1 | cut -d"'" -f4)"
     run curl -sf --cookie .cookie-jar.txt --cookie-jar .cookie-jar.txt \
       --data-urlencode "query=INSERT INTO ${TEST_SQLITE_TABLE}(name) VALUES ('gamma');" \
       --data "token=${token}" "${sql_url}"
